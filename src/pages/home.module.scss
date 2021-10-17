@@ -1,1 +1,49 @@
-// TODO
+.homePageContainer {
+  display: flex;
+  flex-direction: column;
+
+  > img {
+    width: 240px;
+    margin-bottom: 4rem;
+  }
+}
+
+.postsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+
+  .post {
+
+    h1 {
+      margin-bottom: 0.5rem;
+      font-size: 1.75rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+      font-size: 1.125rem;
+    }
+
+    &:hover {
+      cursor: pointer;
+
+      transition: 0.2s;
+
+      filter: brightness(0.7);
+    }
+  }
+
+  > span {
+    text-decoration: none;
+    font-size: 1.125rem;
+    color: var(--link);
+
+    transition: 0.2s;
+
+    &:hover {
+      cursor: pointer;
+      filter: brightness(0.7);
+    }
+  }
+}

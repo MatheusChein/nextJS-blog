@@ -4,4 +4,30 @@
   padding: 0;
 }
 
-// TODO
+:root {
+  --background: #282C34;
+  --title: #f8f8f8;
+  --text: #d7d7d7;
+  --link: #ff57b2
+}
+
+html {
+  background: var(--background)
+}
+
+h1, h2, h3 {
+  color: var(--title);
+  font-family: 'Inter', sans-serif;
+}
+
+span, p, div {
+  color: var(--text);
+}
+
+a {
+  color: var(--link);
+}
+
+body, p, a, span {
+  font: 400 1rem "Inter", sans-serif
+}

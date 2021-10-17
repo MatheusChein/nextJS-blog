@@ -1,1 +1,36 @@
-// TODO
+.banner {
+  display: block;
+  height: 400px;
+  margin: 0 auto;
+}
+
+.postContainer {
+
+  h1 {
+    margin-bottom: 1.5rem;
+    font-size: 3rem;
+  }
+}
+
+.content {
+  margin: 4rem 0 1.5rem;
+
+  h2 {
+    margin-bottom: 3rem;
+  }
+
+  p, ul {
+    font-size: 1.125rem;
+    line-height: 25.2px;
+    margin: 1.5rem 0;
+  }
+
+  ul {
+    padding-left: 1.5rem;
+  }
+
+  li {
+    margin: 0.5rem 0;
+  }
+
+}
