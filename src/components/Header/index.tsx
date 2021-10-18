@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './header.module.scss';
 
-export function Header(): JSX.Element {
+export default function Header(): JSX.Element {
   const router = useRouter();
 
   function handleClick(): void {
@@ -12,7 +13,11 @@ export function Header(): JSX.Element {
 
   return (
     <div className={`${commonStyles.container} ${styles.headerContainer}`}>
-      <img src="/images/logo.svg" onClick={handleClick} alt="logo" />
+      <Link href="/">
+        <a>
+          <img src="/images/logo.svg" alt="logo" />
+        </a>
+      </Link>
     </div>
   );
 }

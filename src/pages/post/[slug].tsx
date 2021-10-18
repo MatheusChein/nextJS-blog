@@ -2,8 +2,8 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import Prismic from '@prismicio/client';
 
 import { RichText } from 'prismic-dom';
-import { useEffect } from 'react';
-import { Header } from '../../components/Header';
+import { useRouter } from 'next/router';
+import Header from '../../components/Header';
 
 import { getPrismicClient } from '../../services/prismic';
 
@@ -22,11 +22,11 @@ interface Post {
     author: string;
     content: {
       heading: string;
-      body: string;
-      bodyAsText: string;
-      // body: {
-      //   text: string;
-      // }[];
+      // body: string;
+      // bodyAsText: string;
+      body: {
+        text: string;
+      }[];
     }[];
   };
 }
@@ -38,16 +38,25 @@ interface PostProps {
 export default function Post({ post }: PostProps): JSX.Element {
   console.log(post);
 
+  const router = useRouter();
+
   const numberOfWords = post.data.content.reduce((acc, currrentValue) => {
     acc =
       acc +
       currrentValue.heading.split(/\s+/g).length +
-      currrentValue.bodyAsText.split(/\s+/g).length;
+      currrentValue.body.reduce((bodyAcc, currentBody) => {
+        bodyAcc += currentBody.text.split(/\s+/g).length;
+        return bodyAcc;
+      }, 0);
 
     return acc;
   }, 0);
 
   const minutesToRead = Math.ceil(numberOfWords / 200);
+
+  if (router.isFallback) {
+    return <p>Carregando...</p>;
+  }
 
   return (
     <>
@@ -56,14 +65,17 @@ export default function Post({ post }: PostProps): JSX.Element {
       <div className={`${commonStyles.container} ${styles.postContainer}`}>
         <h1>{post.data.title}</h1>
         <PostInfo
-          publicationDate={post.first_publication_date}
+          publicationDate={formatDate(post.first_publication_date)}
           author={post.data.author}
           timeToRead={String(minutesToRead)}
         />
         {post.data.content.map(content => (
           <div key={content.heading} className={styles.content}>
             <h2>{content.heading}</h2>
-            <div dangerouslySetInnerHTML={{ __html: content.body }} />
+            {/* <div dangerouslySetInnerHTML={{ __html: content.body }} /> */}
+            {content.body.map(body => (
+              <p key={body.text}>{body.text}</p>
+            ))}
           </div>
         ))}
       </div>
@@ -87,7 +99,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   );
 
   return {
-    paths: [],
+    paths: posts.results.map(post => ({ params: { slug: post.uid } })),
     fallback: true,
   };
 };
@@ -102,17 +114,18 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   // console.log(JSON.stringify(response, null, 2));
   console.log(response);
 
-  const formattedDate = formatDate(response.first_publication_date);
-
   const post = {
-    first_publication_date: formattedDate,
+    uid: response.uid,
+    first_publication_date: response.first_publication_date,
     data: {
       title: response.data.title,
-      content: response.data.content.map(content => ({
-        heading: content.heading,
-        body: RichText.asHtml(content.body),
-        bodyAsText: RichText.asText(content.body),
-      })),
+      subtitle: response.data.subtitle,
+      content: response.data.content,
+      // content: response.data.content.map(content => ({
+      //   heading: content.heading,
+      //   body: RichText.asHtml(content.body),
+      //   bodyAsText: RichText.asText(content.body),
+      // })),
       author: response.data.author,
       banner: response.data.banner,
     },

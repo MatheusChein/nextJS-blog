@@ -22,7 +22,7 @@ interface Post {
 }
 
 interface PostPagination {
-  next_page: string | null;
+  next_page: string;
   results: Post[];
 }
 
@@ -45,7 +45,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
             ...formattedPosts,
             {
               ...post,
-              first_publication_date: formatDate(post.first_publication_date),
+              first_publication_date: post.first_publication_date,
             },
           ];
         });
@@ -65,7 +65,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
               <h1>{post.data.title}</h1>
               <p>{post.data.subtitle}</p>
               <PostInfo
-                publicationDate={post.first_publication_date}
+                publicationDate={formatDate(post.first_publication_date)}
                 author={post.data.author}
               />
             </div>
@@ -93,11 +93,9 @@ export const getStaticProps: GetStaticProps = async () => {
 
   const results = postsResponse.results.map(
     ({ uid, first_publication_date, data }) => {
-      const formattedDate = formatDate(first_publication_date);
-
       return {
         uid,
-        first_publication_date: formattedDate,
+        first_publication_date,
         data: {
           title: data.title,
           subtitle: data.subtitle,
