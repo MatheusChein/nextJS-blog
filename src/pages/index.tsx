@@ -28,9 +28,13 @@ interface PostPagination {
 
 interface HomeProps {
   postsPagination: PostPagination;
+  preview: boolean;
 }
 
-export default function Home({ postsPagination }: HomeProps): JSX.Element {
+export default function Home({
+  postsPagination,
+  preview,
+}: HomeProps): JSX.Element {
   const [posts, setPosts] = useState(postsPagination.results);
   const [nextPage, setNextPage] = useState(postsPagination.next_page);
 
@@ -65,7 +69,9 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
               <h1>{post.data.title}</h1>
               <p>{post.data.subtitle}</p>
               <PostInfo
-                publicationDate={formatDate(post.first_publication_date)}
+                publicationDate={
+                  formatDate(post.first_publication_date).formattedDate
+                }
                 author={post.data.author}
               />
             </div>
@@ -73,17 +79,28 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
         ))}
         {nextPage && <span onClick={handleLinkClick}>Carregar mais posts</span>}
       </div>
+      {preview && (
+        <aside className={commonStyles.previewButton}>
+          <Link href="/api/exit-preview">
+            <a>Sair do modo Preview</a>
+          </Link>
+        </aside>
+      )}
     </main>
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async ({
+  preview = false,
+  previewData,
+}) => {
   const prismic = getPrismicClient();
   const postsResponse = await prismic.query(
     [Prismic.predicates.at('document.type', 'posts')],
     {
       fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
       pageSize: 2,
+      ref: previewData?.ref ?? null,
     }
   );
 
@@ -113,6 +130,7 @@ export const getStaticProps: GetStaticProps = async () => {
   return {
     props: {
       postsPagination,
+      preview,
     },
   };
 };

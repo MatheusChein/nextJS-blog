@@ -10,10 +10,15 @@
     margin-bottom: 1.5rem;
     font-size: 3rem;
   }
+
+  hr {
+    border: 1px solid #d7d7d7d7;
+    filter: opacity(0.1);
+  }
 }
 
 .content {
-  margin: 4rem 0 1.5rem;
+  margin: 4rem 0 3rem;
 
   h2 {
     margin-bottom: 3rem;
@@ -33,4 +38,32 @@
     margin: 0.5rem 0;
   }
 
+}
+
+.prevNextSection {
+  display: flex;
+  justify-content: space-between;
+  padding: 3rem 0;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    width: 15rem;
+    gap: 0.5rem;
+  }
+
+  div:last-child {
+    text-align: right;
+  }
+
+  a {
+    text-decoration: none;
+    font-weight: 600;
+
+    transition: 0.2s;
+
+    &:hover {
+      filter: brightness(0.8);
+    }
+  }
 }

@@ -2,10 +2,18 @@
   display: flex;
   gap: 1.5rem;
   font-size: 0.875rem;
+  flex-wrap: wrap;
+  width: 75%;
 
   div {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  .publicationDate {
+    span {
+      font-style: italic;
+    }
   }
 }

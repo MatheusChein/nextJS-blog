@@ -3,3 +3,26 @@
   max-width: 700px;
   padding: 4rem 0;
 }
+
+.previewButton {
+  width: 700px;
+  padding: 1rem 0;
+  background: #f8f8f8;
+  border-radius: 4px;
+  margin-top: 2rem;
+  text-align: center;
+
+  transition: 0.2s;
+
+  &:hover {
+    cursor: pointer;
+    filter: brightness(0.8);
+  }
+
+  a {
+    color: #1a1d23;
+    font-size: 18px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+}

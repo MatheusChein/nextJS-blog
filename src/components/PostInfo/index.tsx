@@ -6,12 +6,17 @@ interface PostInfoProps {
   publicationDate: string;
   author: string;
   timeToRead?: string;
+  last_publication_date?: {
+    formattedDate: string;
+    formattedHour: string;
+  };
 }
 
 export function PostInfo({
   publicationDate,
   author,
   timeToRead,
+  last_publication_date,
 }: PostInfoProps): JSX.Element {
   return (
     <div className={styles.postInfoContainer}>
@@ -27,6 +32,14 @@ export function PostInfo({
         <div>
           <FiClock />
           <span>{timeToRead} min</span>
+        </div>
+      )}
+      {last_publication_date && (
+        <div className={styles.publicationDate}>
+          <span>
+            * editado em {last_publication_date.formattedDate}, às{' '}
+            {last_publication_date.formattedHour}
+          </span>
         </div>
       )}
     </div>

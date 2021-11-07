@@ -1,5 +1,7 @@
+/* eslint-disable no-param-reassign */
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Prismic from '@prismicio/client';
+import Link from 'next/link';
 
 import { RichText } from 'prismic-dom';
 import { useRouter } from 'next/router';
@@ -11,9 +13,11 @@ import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import { formatDate } from '../../utils/formatDate';
 import { PostInfo } from '../../components/PostInfo';
+import { Comments } from '../../components/Comments';
 
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     title: string;
     banner: {
@@ -31,13 +35,26 @@ interface Post {
   };
 }
 
-interface PostProps {
-  post: Post;
+interface PrevNextPost {
+  uid: string;
+  data: {
+    title: string;
+  };
 }
 
-export default function Post({ post }: PostProps): JSX.Element {
-  console.log(post);
+interface PostProps {
+  post: Post;
+  prevPost: PrevNextPost | null;
+  nextPost: PrevNextPost | null;
+  preview: boolean;
+}
 
+export default function Post({
+  post,
+  preview,
+  prevPost,
+  nextPost,
+}: PostProps): JSX.Element {
   const router = useRouter();
 
   const numberOfWords = post.data.content.reduce((acc, currrentValue) => {
@@ -65,9 +82,12 @@ export default function Post({ post }: PostProps): JSX.Element {
       <div className={`${commonStyles.container} ${styles.postContainer}`}>
         <h1>{post.data.title}</h1>
         <PostInfo
-          publicationDate={formatDate(post.first_publication_date)}
+          publicationDate={
+            formatDate(post.first_publication_date).formattedDate
+          }
           author={post.data.author}
           timeToRead={String(minutesToRead)}
+          last_publication_date={formatDate(post.last_publication_date)}
         />
         {post.data.content.map(content => (
           <div key={content.heading} className={styles.content}>
@@ -78,6 +98,33 @@ export default function Post({ post }: PostProps): JSX.Element {
             ))}
           </div>
         ))}
+        <hr />
+        <div className={styles.prevNextSection}>
+          {prevPost && (
+            <div>
+              <span>{prevPost.data.title}</span>
+              <Link href={`/post/${prevPost.uid}`}>
+                <a>Post anterior</a>
+              </Link>
+            </div>
+          )}
+          {nextPost && (
+            <div>
+              <span>{nextPost.data.title}</span>
+              <Link href={`/post/${nextPost.uid}`}>
+                <a>Próximo post</a>
+              </Link>
+            </div>
+          )}
+        </div>
+        <Comments />
+        {preview && (
+          <aside className={commonStyles.previewButton}>
+            <Link href="/api/exit-preview">
+              <a>Sair do modo Preview</a>
+            </Link>
+          </aside>
+        )}
       </div>
     </>
   );
@@ -104,19 +151,26 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  preview = false,
+  previewData,
+}) => {
   const prismic = getPrismicClient();
 
   const { slug } = params;
 
-  const response = await prismic.getByUID('posts', String(slug), {});
+  const response = await prismic.getByUID('posts', String(slug), {
+    ref: previewData?.ref ?? null,
+  });
 
   // console.log(JSON.stringify(response, null, 2));
-  console.log(response);
+  // console.log(response);
 
   const post = {
     uid: response.uid,
     first_publication_date: response.first_publication_date,
+    last_publication_date: response.last_publication_date,
     data: {
       title: response.data.title,
       subtitle: response.data.subtitle,
@@ -131,9 +185,32 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     },
   };
 
+  const posts = await prismic.query(
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      fetch: ['posts.title'],
+    }
+  );
+
+  const currentPostIndex = posts.results.findIndex(
+    item => item.uid === response.uid
+  );
+
+  console.log(posts.results);
+
+  const prevPost =
+    currentPostIndex === 0 ? null : posts.results[currentPostIndex - 1];
+  const nextPost =
+    currentPostIndex === posts.results.length - 1
+      ? null
+      : posts.results[currentPostIndex + 1];
+
   return {
     props: {
       post,
+      prevPost,
+      nextPost,
+      preview,
     },
   };
 };
