@@ -28,7 +28,7 @@ interface PostPagination {
 
 interface HomeProps {
   postsPagination: PostPagination;
-  preview: boolean;
+  preview?: boolean;
 }
 
 export default function Home({
@@ -69,9 +69,7 @@ export default function Home({
               <h1>{post.data.title}</h1>
               <p>{post.data.subtitle}</p>
               <PostInfo
-                publicationDate={
-                  formatDate(post.first_publication_date).formattedDate
-                }
+                first_publication_date={formatDate(post.first_publication_date)}
                 author={post.data.author}
               />
             </div>

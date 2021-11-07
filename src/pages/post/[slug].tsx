@@ -11,13 +11,13 @@ import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
-import { formatDate } from '../../utils/formatDate';
+import { formatDate, formatHour } from '../../utils/formatDate';
 import { PostInfo } from '../../components/PostInfo';
 import { Comments } from '../../components/Comments';
 
 interface Post {
   first_publication_date: string | null;
-  last_publication_date: string | null;
+  last_publication_date?: string | null;
   data: {
     title: string;
     banner: {
@@ -44,9 +44,9 @@ interface PrevNextPost {
 
 interface PostProps {
   post: Post;
-  prevPost: PrevNextPost | null;
-  nextPost: PrevNextPost | null;
-  preview: boolean;
+  prevPost?: PrevNextPost | null;
+  nextPost?: PrevNextPost | null;
+  preview?: boolean;
 }
 
 export default function Post({
@@ -82,12 +82,19 @@ export default function Post({
       <div className={`${commonStyles.container} ${styles.postContainer}`}>
         <h1>{post.data.title}</h1>
         <PostInfo
-          publicationDate={
-            formatDate(post.first_publication_date).formattedDate
-          }
+          first_publication_date={formatDate(post.first_publication_date)}
           author={post.data.author}
           timeToRead={String(minutesToRead)}
-          last_publication_date={formatDate(post.last_publication_date)}
+          last_publication_date={
+            post.last_publication_date
+              ? formatDate(post.last_publication_date)
+              : null
+          }
+          last_publication_hour={
+            post.last_publication_date
+              ? formatDate(post.last_publication_date)
+              : null
+          }
         />
         {post.data.content.map(content => (
           <div key={content.heading} className={styles.content}>
@@ -195,8 +202,6 @@ export const getStaticProps: GetStaticProps = async ({
   const currentPostIndex = posts.results.findIndex(
     item => item.uid === response.uid
   );
-
-  console.log(posts.results);
 
   const prevPost =
     currentPostIndex === 0 ? null : posts.results[currentPostIndex - 1];

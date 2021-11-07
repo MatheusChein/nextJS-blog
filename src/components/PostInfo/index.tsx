@@ -3,26 +3,25 @@ import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
 import styles from './styles.module.scss';
 
 interface PostInfoProps {
-  publicationDate: string;
+  first_publication_date: string;
   author: string;
   timeToRead?: string;
-  last_publication_date?: {
-    formattedDate: string;
-    formattedHour: string;
-  };
+  last_publication_date?: string;
+  last_publication_hour?: string;
 }
 
 export function PostInfo({
-  publicationDate,
+  first_publication_date,
   author,
   timeToRead,
   last_publication_date,
+  last_publication_hour,
 }: PostInfoProps): JSX.Element {
   return (
     <div className={styles.postInfoContainer}>
       <div>
         <FiCalendar />
-        <span>{publicationDate}</span>
+        <span>{first_publication_date}</span>
       </div>
       <div>
         <FiUser />
@@ -37,8 +36,7 @@ export function PostInfo({
       {last_publication_date && (
         <div className={styles.publicationDate}>
           <span>
-            * editado em {last_publication_date.formattedDate}, às{' '}
-            {last_publication_date.formattedHour}
+            * editado em {last_publication_date}, às {last_publication_hour}
           </span>
         </div>
       )}
